@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sorteo Motul × Diego Serrano — Ganadores</title>
+<style>
+  /* ====== TIPOGRAFÍAS DE MARCA ====== */
+  @font-face{font-family:'Grift';src:url('fonts/Grift-Medium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:block}
+  @font-face{font-family:'Grift';src:url('fonts/Grift-SemiBold.woff2') format('woff2');font-weight:600;font-style:normal;font-display:block}
+  @font-face{font-family:'Grift';src:url('fonts/Grift-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:block}
+  @font-face{font-family:'Grift';src:url('fonts/Grift-ExtraBold.woff2') format('woff2');font-weight:800;font-style:normal;font-display:block}
+  @font-face{font-family:'Grift';src:url('fonts/Grift-Black.woff2') format('woff2');font-weight:900;font-style:normal;font-display:block}
+  @font-face{font-family:'Grift';src:url('fonts/Grift-BlackItalic.woff2') format('woff2');font-weight:900;font-style:italic;font-display:block}
+  @font-face{font-family:'Grift';src:url('fonts/Grift-ExtraBoldItalic.woff2') format('woff2');font-weight:800;font-style:italic;font-display:block}
+
+  :root{
+    --rojo:#ED252F;          /* Motul */
+    --rojo-hondo:#B01821;
+    --naranja:#E2503C;       /* acento del arte Race Weekend */
+    --tinta:#232B38;         /* azul tinta del arte */
+    --papel:#EDE9E0;         /* crema del arte */
+    --negro:#0B0D10;
+    --humo:#A8AEB6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#000;height:100%;overflow:hidden}
+  body{display:grid;place-items:center;font-family:'Grift',system-ui,sans-serif}
+
+  #stage{position:fixed;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#120508;transform-origin:center center;transform:translate(-50%,-50%)}
+
+  /* ---------- FONDO ---------- */
+  #bgvideo{
+    position:absolute;left:-9%;top:-9%;width:118%;height:118%;
+    object-fit:cover;object-position:center;
+    filter:blur(28px) saturate(118%) brightness(.46) contrast(1.04);
+  }
+  #tinta{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(120% 62% at 50% 8%,  rgba(237,37,47,.30) 0%, rgba(142,17,24,.16) 48%, rgba(0,0,0,0) 78%),
+      radial-gradient(120% 60% at 50% 100%,rgba(142,17,24,.28) 0%, rgba(0,0,0,0) 60%),
+      linear-gradient(180deg, rgba(9,11,13,.88) 0%, rgba(9,11,13,.72) 30%, rgba(9,11,13,.74) 60%, rgba(9,11,13,.94) 100%);
+  }
+  #vineta{position:absolute;inset:0;background:radial-gradient(116% 70% at 50% 50%, rgba(0,0,0,0) 42%, rgba(0,0,0,.76) 100%)}
+  #grano{
+    position:absolute;inset:0;opacity:.085;mix-blend-mode:overlay;pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.65'/></svg>");
+  }
+  #barrido{
+    position:absolute;left:-10%;width:120%;height:4px;top:0;opacity:0;z-index:38;
+    background:linear-gradient(90deg,transparent,var(--rojo) 16%,#fff 50%,var(--rojo) 84%,transparent);
+    box-shadow:0 0 28px rgba(237,37,47,.9);
+  }
+
+  /* ---------- MARCO FIJO ---------- */
+  .marco{position:absolute;left:0;right:0;z-index:40;pointer-events:none}
+  #cabecera{top:62px;display:flex;align-items:center;justify-content:space-between;padding:0 70px;opacity:0}
+  #cabecera .des{height:54px;filter:brightness(0) invert(1);opacity:.95}
+  #cabecera .por{font:800 22px/1 'Grift',sans-serif;letter-spacing:.34em;color:rgba(255,255,255,.40)}
+  #cabecera .lockup{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+  #cabecera .motul{height:44px;display:block}
+  #cabecera .division{font:800 15px/1 'Grift',sans-serif;letter-spacing:.26em;color:rgba(255,255,255,.80);text-transform:uppercase;white-space:nowrap}
+
+  #piepagina{bottom:92px;display:flex;flex-direction:column;align-items:center;gap:13px;opacity:0}
+  #piepagina .filo{width:112px;height:3px;background:var(--rojo);border-radius:2px}
+  #piepagina .rotulo{font:800 21px/1 'Grift',sans-serif;letter-spacing:.44em;color:rgba(255,255,255,.50);text-transform:uppercase}
+  #piepagina .tedasa{height:42px;filter:brightness(0) invert(1);opacity:.93}
+
+  /* ---------- ESCENAS ---------- */
+  .escena{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 72px;text-align:center;opacity:0}
+
+  .kicker{font:800 26px/1 'Grift',sans-serif;letter-spacing:.42em;text-transform:uppercase;color:var(--rojo);margin-bottom:40px}
+  .kicker.gris{color:rgba(255,255,255,.52)}
+
+  .titular{
+    font:900 italic 104px/1.04 'Grift',sans-serif;color:#fff;text-transform:uppercase;
+    letter-spacing:-.022em;text-shadow:0 12px 44px rgba(0,0,0,.80);
+  }
+  .titular.chico{font-size:86px}
+  .rojo{color:var(--rojo)}
+  .sub{font:600 34px/1.34 'Grift',sans-serif;color:rgba(255,255,255,.80);margin-top:32px;max-width:840px}
+
+  /* 1 · intro */
+  #e1 .desgrande{height:176px;filter:brightness(0) invert(1);margin-bottom:44px}
+  #e1 .placa{
+    margin-top:38px;display:inline-flex;align-items:center;gap:18px;padding:18px 38px;
+    border:2px solid rgba(255,255,255,.22);border-radius:100px;background:rgba(255,255,255,.06);
+  }
+  #e1 .placa span{font:700 29px/1 'Grift',sans-serif;color:rgba(255,255,255,.88);letter-spacing:.03em}
+  #e1 .placa .punto{width:13px;height:13px;border-radius:50%;background:var(--rojo)}
+
+  /* 2 · la pregunta */
+  #e2 .fantasma{
+    font:900 italic 460px/1 'Grift',sans-serif;color:rgba(237,37,47,.24);
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);z-index:-1;
+  }
+
+  /* 3 · el filtro */
+  .conteo{display:flex;flex-direction:column;gap:20px;width:100%;max-width:850px;margin-top:46px}
+  .fila-filtro{
+    display:flex;align-items:center;justify-content:space-between;gap:22px;padding:26px 36px;border-radius:20px;
+    background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.13);opacity:0;transform:translateY(24px);
+  }
+  .fila-filtro .txt{font:700 33px/1.2 'Grift',sans-serif;color:#fff;text-align:left}
+  .fila-filtro .txt .mini{display:block;font:500 23px/1.3 'Grift',sans-serif;color:rgba(255,255,255,.52);margin-top:5px}
+  .fila-filtro .num{font:900 56px/1 'Grift',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+  .fila-filtro.resta{background:rgba(176,24,33,.18);border-color:rgba(237,37,47,.40)}
+  .fila-filtro.resta .num{color:var(--rojo)}
+  .fila-filtro.total{background:var(--rojo);border-color:var(--rojo)}
+  .fila-filtro.total .num{color:#fff}
+
+  /* 4 · el cronómetro */
+  #e4 .marcoCrono{
+    margin-top:12px;padding:34px 58px;border-radius:26px;
+    border:3px solid rgba(237,37,47,.55);
+    background:linear-gradient(180deg,rgba(237,37,47,.17),rgba(11,13,16,.55));
+  }
+  #crono{
+    font:900 italic 184px/1 'Grift',sans-serif;color:#fff;letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;text-shadow:0 0 74px rgba(237,37,47,.72),0 14px 50px rgba(0,0,0,.78);
+  }
+
+  /* 5 · el recuento */
+  #e5{justify-content:flex-start;padding-top:108px}
+  #e5 .titular{font-size:84px}
+  #e5 .refTiempo{font:800 30px/1 'Grift',sans-serif;color:rgba(255,255,255,.60);margin:16px 0 30px;letter-spacing:.03em}
+  #e5 .refTiempo b{color:var(--rojo);font-weight:900}
+  #lista{display:flex;flex-direction:column;gap:9px;width:100%;max-width:930px}
+  .fila{
+    position:relative;display:flex;align-items:center;gap:16px;padding:14px 22px;border-radius:13px;overflow:hidden;
+    background:rgba(255,255,255,.075);border:1.5px solid rgba(255,255,255,.12);opacity:0;transform:translateX(-30px);
+  }
+  .fila .barra{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,rgba(237,37,47,.40),rgba(237,37,47,.05))}
+  .fila .pos{position:relative;flex:0 0 58px;text-align:center;font:900 italic 32px/1 'Grift',sans-serif;color:rgba(255,255,255,.46);font-variant-numeric:tabular-nums}
+  .fila .usr{position:relative;flex:1;text-align:left;font:700 30px/1.1 'Grift',sans-serif;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fila .pron{position:relative;flex:0 0 118px;text-align:right;font:900 italic 38px/1 'Grift',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+  .fila .dif{position:relative;flex:0 0 136px;text-align:right;font:800 27px/1 'Grift',sans-serif;color:var(--rojo);font-variant-numeric:tabular-nums}
+  .fila.top1{background:rgba(237,37,47,.30);border-color:var(--rojo);box-shadow:0 0 48px rgba(237,37,47,.46)}
+  .fila.top1 .pos{color:#fff}
+  .fila.top2{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.46)}
+  .fila.top3{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.30)}
+  .fila.fuera{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.09)}
+  .fila.fuera .usr,.fila.fuera .pron{color:rgba(255,255,255,.44);text-decoration:line-through}
+  .fila.fuera .dif{color:rgba(255,255,255,.38);font-size:22px}
+
+  /* 6 · podio — fichas de papel, como el arte Race Weekend */
+  #podio{display:flex;flex-direction:column;gap:26px;width:100%;max-width:910px;margin-top:46px}
+  .ganador{
+    position:relative;display:flex;align-items:center;gap:26px;padding:28px 34px;border-radius:20px;
+    background:rgba(255,255,255,.10);border:2px solid rgba(255,255,255,.20);
+    opacity:0;transform:scale(.9);backdrop-filter:blur(6px);
+  }
+  .ganador .medalla{
+    flex:0 0 82px;height:88px;border-radius:50%;display:grid;place-items:center;
+    font:900 italic 42px/1 'Grift',sans-serif;color:var(--tinta);
+  }
+  .ganador .cuerpo{flex:1;text-align:left}
+  .ganador .cuerpo .u{font:900 42px/1.08 'Grift',sans-serif;color:#fff}
+  .ganador .cuerpo .d{font:600 25px/1.3 'Grift',sans-serif;color:rgba(255,255,255,.68);margin-top:7px}
+  .ganador .cuerpo .d b{color:var(--rojo);font-weight:900}
+  .ganador .premio{flex:0 0 220px;text-align:right;font:700 23px/1.34 'Grift',sans-serif;color:rgba(255,255,255,.84)}
+  .ganador.g1{background:linear-gradient(135deg,rgba(237,37,47,.40),rgba(142,17,24,.24));border-color:var(--rojo);box-shadow:0 0 64px rgba(237,37,47,.50)}
+  .ganador.g1 .cuerpo .u{font-size:56px}
+  .ganador.g1 .medalla{background:linear-gradient(140deg,#FFD66B,#DF9C18)}
+  .ganador.g2 .medalla{background:linear-gradient(140deg,#E6E8EC,#9BA1AA)}
+  .ganador.g3 .medalla{background:linear-gradient(140deg,#E3AC7E,#A4682F)}
+
+  /* 7 · cierre */
+  #e7 .logosCierre{display:flex;align-items:center;gap:48px;margin-bottom:52px}
+  #e7 .logosCierre .des{height:104px;filter:brightness(0) invert(1)}
+  #e7 .logosCierre .lockup{display:flex;flex-direction:column;align-items:center;gap:12px}
+  #e7 .logosCierre .motul{height:76px;display:block}
+  #e7 .logosCierre .division{font:800 21px/1 'Grift',sans-serif;letter-spacing:.24em;color:rgba(255,255,255,.84);text-transform:uppercase;white-space:nowrap}
+  #e7 .divisor{width:3px;height:96px;background:rgba(255,255,255,.22)}
+  #e7 .nota{margin-top:42px;font:600 29px/1.52 'Grift',sans-serif;color:rgba(255,255,255,.66);max-width:800px}
+
+  .destello{position:absolute;inset:0;background:#fff;opacity:0;z-index:36;pointer-events:none;mix-blend-mode:screen}
+
+  #barra{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;gap:10px}
+  #repetir,#bajar{
+    padding:12px 26px;border:0;border-radius:999px;cursor:pointer;text-decoration:none;
+    font:800 15px/1 'Grift',system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;opacity:.88;
+  }
+  #repetir{background:var(--rojo);color:#fff}
+  #bajar{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.30)}
+  #repetir:hover,#bajar:hover{opacity:1}
+  body.render #barra{display:none}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <video id="bgvideo" src="assets/video-fondo.mp4" muted playsinline preload="auto"></video>
+  <div id="tinta"></div>
+  <div id="vineta"></div>
+  <div id="grano"></div>
+  <div id="barrido"></div>
+
+  <div class="marco" id="cabecera">
+    <img class="des" src="assets/des.png" alt="DES — Diego Serrano">
+    <span class="por">POR</span>
+    <span class="lockup"><img class="motul" src="assets/motul-oficial.png" alt="Motul"><span class="division">División Automotriz</span></span>
+  </div>
+
+  <div class="marco" id="piepagina">
+    <div class="filo"></div>
+    <div class="rotulo">Powered by</div>
+    <img class="tedasa" src="assets/tedasa.png" alt="Tedasa Tecnicentro">
+  </div>
+
+  <!-- 1 · intro -->
+  <section class="escena" id="e1">
+    <img class="desgrande" src="assets/des.png" alt="">
+    <div class="kicker">Concurso cerrado</div>
+    <div class="titular">Los ganadores<br><span class="rojo">del pronóstico</span></div>
+    <div class="placa">
+      <span class="punto"></span>
+      <span>Gran Premio Ambato · Última fecha · Circuitos 2026</span>
+    </div>
+  </section>
+
+  <!-- 2 · la pregunta -->
+  <section class="escena" id="e2">
+    <div class="fantasma">?</div>
+    <div class="kicker">El reto era uno solo</div>
+    <div class="titular">¿Cuánto<br>cronometró<br><span class="rojo">Diego</span>?</div>
+    <p class="sub">Adivinar su mejor tiempo en carrera.<br>Tres ganadores: los que más se acercaran.</p>
+  </section>
+
+  <!-- 3 · el filtro -->
+  <section class="escena" id="e3">
+    <div class="kicker">Las reglas, al pie de la letra</div>
+    <div class="titular chico">Quién entra<br>y quién no</div>
+    <div class="conteo">
+      <div class="fila-filtro" id="f1">
+        <div class="txt">Comentarios en las dos publicaciones<span class="mini">Reel del 24 oct + arte Race Weekend</span></div>
+        <div class="num" id="n1">0</div>
+      </div>
+      <div class="fila-filtro resta" id="f2">
+        <div class="txt">Repetidos<span class="mini">La misma persona, el mismo pronóstico</span></div>
+        <div class="num">−2</div>
+      </div>
+      <div class="fila-filtro resta" id="f3">
+        <div class="txt">Sin pronóstico<span class="mini">Mensajes de aliento, sin cifra</span></div>
+        <div class="num">−2</div>
+      </div>
+      <div class="fila-filtro resta" id="f4">
+        <div class="txt">Fuera de plazo<span class="mini">Después del cierre de clasificación · 24 oct, 09:00</span></div>
+        <div class="num">−2</div>
+      </div>
+      <div class="fila-filtro total" id="f5">
+        <div class="txt">Pronósticos válidos</div>
+        <div class="num">15</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · el tiempo -->
+  <section class="escena" id="e4">
+    <div class="kicker">El tiempo real de Diego</div>
+    <div class="marcoCrono"><div id="crono">1:52.888</div></div>
+    <p class="sub">Su mejor vuelta en carrera.<br><b class="rojo">Nadie bajó de esa marca.</b></p>
+  </section>
+
+  <!-- 5 · el recuento -->
+  <section class="escena" id="e5">
+    <div class="titular">El recuento</div>
+    <div class="refTiempo">Del más lejano al más cercano a <b>1:52.888</b></div>
+    <div id="lista"></div>
+  </section>
+
+  <!-- 6 · podio -->
+  <section class="escena" id="e6">
+    <div class="kicker">Podio del concurso</div>
+    <div class="titular chico">Los <span class="rojo">ganadores</span></div>
+    <div id="podio"></div>
+  </section>
+
+  <!-- 7 · cierre -->
+  <section class="escena" id="e7">
+    <div class="logosCierre">
+      <img class="des" src="assets/des.png" alt="">
+      <div class="divisor"></div>
+      <span class="lockup"><img class="motul" src="assets/motul-oficial.png" alt="Motul"><span class="division">División Automotriz</span></span>
+    </div>
+    <div class="kicker">Gracias por participar</div>
+    <div class="titular chico">Nos vemos<br>en la <span class="rojo">pista</span></div>
+    <p class="nota">Escribimos por mensaje directo a los tres ganadores<br>para coordinar la entrega de sus premios Motul.</p>
+  </section>
+
+  <div class="destello" id="destello"></div>
+</div>
+
+<div id="barra"><button id="repetir">Repetir</button><a id="bajar" href="sorteo-motul-diego-serrano.mp4" download>Descargar MP4</a></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* =======================================================================
+     DATOS DEL CONCURSO  —  Diego Serrano × Motul × Tedasa
+     Tiempo real de Diego: 1:52.888  (112.888 s)
+     Cierre: 24 oct 2026, 09:00 Ecuador (= 14:00 UTC), al terminar la clasificación
+     Fuente: comentarios de instagram.com/p/De2lpjjnKQ3 y /p/De3FuIVNlr9
+     ======================================================================= */
+  const OBJETIVO = 112.888;
+
+  // válidos, ordenados del más lejano al más cercano
+  const VALIDOS = [
+    { u:'joff_pazmi',            pron:'2:18', seg:138.000, hora:'23 oct · 17:38' },
+    { u:'marc511568',            pron:'2:15', seg:135.000, hora:'23 oct · 17:16' },
+    { u:'cris_alejo.ramirez',    pron:'2:15', seg:135.000, hora:'23 oct · 23:10' },
+    { u:'sebasolisbarona',       pron:'2:14', seg:134.000, hora:'23 oct · 20:42' },
+    { u:'juanfelipeserrano',     pron:'2:13', seg:133.000, hora:'23 oct · 18:11' },
+    { u:'npalomeque',            pron:'2:13', seg:133.000, hora:'24 oct · 08:10' },
+    { u:'fabiancuesta512',       pron:'2:12', seg:132.000, hora:'23 oct · 19:01' },
+    { u:'ferleon1982',           pron:'2:11', seg:131.000, hora:'24 oct · 05:42' },
+    { u:'cullacay',              pron:'2:10', seg:130.000, hora:'24 oct · 07:07' },
+    { u:'steveee_andres_00',     pron:'2:08', seg:128.000, hora:'23 oct · 23:21' },
+    { u:'felipeguarderas',       pron:'2:07', seg:127.000, hora:'23 oct · 18:50' },
+    { u:'titi_molina',           pron:'2:03', seg:123.000, hora:'23 oct · 22:05' },
+    { u:'_jrl_57',               pron:'2:02', seg:122.000, hora:'23 oct · 17:56' },
+    { u:'mauricio_caceres_cano', pron:'2:00', seg:120.000, hora:'23 oct · 19:34' },
+    { u:'xavibermeo_08',         pron:'1:58', seg:118.000, hora:'23 oct · 22:20' }
+  ];
+
+  const FUERA = [
+    { u:'carsabojr',    pron:'2:08', hora:'24 oct · 09:48' },
+    { u:'memorestrepo7',pron:'2:15', hora:'25 oct · 07:32' }
+  ];
+
+  const PREMIOS = [
+    'Aceite<br>Motul 300V',
+    'Camiseta oficial<br>del equipo',
+    'Gorra oficial<br>del equipo'
+  ];
+
+  /* ====== CONSTRUCCIÓN DEL DOM ====== */
+  const lista = document.getElementById('lista');
+  const filas = [];
+  const PEOR = Math.abs(VALIDOS[0].seg - OBJETIVO);
+
+  VALIDOS.forEach((p, i) => {
+    const dif = p.seg - OBJETIVO;
+    const puesto = VALIDOS.length - i;          // 15º … 1º
+    const el = document.createElement('div');
+    el.className = 'fila' + (puesto === 1 ? ' top1' : puesto === 2 ? ' top2' : puesto === 3 ? ' top3' : '');
+    el.innerHTML =
+      '<div class="barra"></div>' +
+      '<div class="pos">' + puesto + '</div>' +
+      '<div class="usr">@' + p.u + '</div>' +
+      '<div class="pron">' + p.pron + '</div>' +
+      '<div class="dif">+' + dif.toFixed(3) + 's</div>';
+    lista.appendChild(el);
+    filas.push({ el, barra: el.querySelector('.barra'), ancho: Math.abs(dif) / PEOR * 100 });
+  });
+
+  FUERA.forEach(f => {
+    const el = document.createElement('div');
+    el.className = 'fila fuera';
+    el.innerHTML =
+      '<div class="pos">—</div>' +
+      '<div class="usr">@' + f.u + '</div>' +
+      '<div class="pron">' + f.pron + '</div>' +
+      '<div class="dif">fuera de plazo</div>';
+    lista.appendChild(el);
+    filas.push({ el, barra: null, ancho: 0 });
+  });
+
+  const podio = document.getElementById('podio');
+  const podioEls = [];
+  [0, 1, 2].forEach(k => {
+    const p = VALIDOS[VALIDOS.length - 1 - k];   // 1º, 2º, 3º
+    const dif = p.seg - OBJETIVO;
+    const el = document.createElement('div');
+    el.className = 'ganador g' + (k + 1);
+    el.innerHTML =
+      '<div class="medalla">' + (k + 1) + '</div>' +
+      '<div class="cuerpo"><div class="u">@' + p.u + '</div>' +
+      '<div class="d">Pronóstico <b>' + p.pron + '</b> · a ' + Math.abs(dif).toFixed(3) + ' s del tiempo real</div></div>' +
+      '<div class="premio">' + PREMIOS[k] + '</div>';
+    podio.appendChild(el);
+    podioEls.push(el);
+  });
+
+  /* ====== UTILIDADES ====== */
+  const clamp  = (v, a, b) => v < a ? a : v > b ? b : v;
+  const suave  = t => t * t * (3 - 2 * t);
+  const salida = t => 1 - Math.pow(1 - t, 3);
+  const prog   = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+  function velo(t, a, b, c, d) {
+    if (t < a) return 0;
+    if (t < b) return suave(prog(t, a, b));
+    if (t < c) return 1;
+    if (t < d) return 1 - suave(prog(t, c, d));
+    return 0;
+  }
+
+  /* ====== GUION ====== */
+  const E = {
+    e1: [0.0,  5.2],
+    e2: [5.2,  10.0],
+    e3: [10.0, 18.6],
+    e4: [18.6, 25.0],
+    e5: [25.0, 47.5],
+    e6: [47.5, 57.5],
+    e7: [57.5, 63.5]
+  };
+  const FIN = 63.5;
+
+  const nodos = {};
+  Object.keys(E).forEach(k => nodos[k] = document.getElementById(k));
+  const cabecera = document.getElementById('cabecera');
+  const piepagina = document.getElementById('piepagina');
+  const barrido  = document.getElementById('barrido');
+  const destello = document.getElementById('destello');
+  const crono    = document.getElementById('crono');
+  const n1       = document.getElementById('n1');
+  const filtroFilas = ['f1','f2','f3','f4','f5'].map(id => document.getElementById(id));
+
+  const fmt = s => {
+    const m = Math.floor(s / 60), r = s - m * 60;
+    return m + ':' + (r < 10 ? '0' : '') + r.toFixed(3);
+  };
+
+  /* ====== PINTAR UN INSTANTE ====== */
+  function pintar(t) {
+    // marco: se repliega durante el recuento para dejar sitio a la tabla
+    const marcoFuera = velo(t, E.e5[0] - 0.4, E.e5[0] + 0.3, E.e5[1] - 0.5, E.e5[1] + 0.2);
+    const vis = (1 - marcoFuera);
+    cabecera.style.opacity  = (velo(t, 0.9, 1.9, FIN - 0.6, FIN) * vis).toFixed(3);
+    piepagina.style.opacity = (velo(t, 1.4, 2.4, FIN - 0.6, FIN) * vis).toFixed(3);
+
+
+    // barrido rojo en cada corte
+    let br = 0, brY = 0;
+    Object.values(E).forEach(([a]) => {
+      const p = prog(t, a - 0.1, a + 0.5);
+      if (p > 0 && p < 1) { br = Math.sin(p * Math.PI); brY = p * 1920; }
+    });
+    barrido.style.opacity = br.toFixed(3);
+    barrido.style.top = brY.toFixed(0) + 'px';
+
+    // destellos en los golpes fuertes
+    const d1 = Math.max(0, 1 - Math.abs(t - E.e4[0]) / 0.24);
+    const d2 = Math.max(0, 1 - Math.abs(t - E.e6[0]) / 0.24);
+    destello.style.opacity = (Math.max(d1, d2) * 0.40).toFixed(3);
+
+    // --- 1 · intro ---
+    let o = velo(t, 0.15, 1.15, E.e1[1] - 0.6, E.e1[1]);
+    nodos.e1.style.opacity = o.toFixed(3);
+    if (o > 0) nodos.e1.style.transform = 'scale(' + (1.06 - 0.06 * salida(prog(t, 0.15, 1.7))).toFixed(4) + ')';
+
+    // --- 2 · la pregunta ---
+    o = velo(t, E.e2[0], E.e2[0] + 0.65, E.e2[1] - 0.55, E.e2[1]);
+    nodos.e2.style.opacity = o.toFixed(3);
+    if (o > 0) {
+      const lat = 1 + 0.028 * Math.sin((t - E.e2[0]) * 3.0);
+      nodos.e2.querySelector('.fantasma').style.transform = 'translate(-50%,-52%) scale(' + lat.toFixed(4) + ')';
+    }
+
+    // --- 3 · el filtro ---
+    o = velo(t, E.e3[0], E.e3[0] + 0.65, E.e3[1] - 0.55, E.e3[1]);
+    nodos.e3.style.opacity = o.toFixed(3);
+    if (o > 0) {
+      const base = E.e3[0] + 0.8;
+      filtroFilas.forEach((f, i) => {
+        const p = prog(t, base + i * 1.35, base + i * 1.35 + 0.5);
+        f.style.opacity = suave(p).toFixed(3);
+        f.style.transform = 'translateY(' + (24 - 24 * salida(p)).toFixed(1) + 'px)';
+      });
+      n1.textContent = Math.round(21 * salida(prog(t, base, base + 1.1)));
+    }
+
+    // --- 4 · el cronómetro ---
+    o = velo(t, E.e4[0], E.e4[0] + 0.5, E.e4[1] - 0.55, E.e4[1]);
+    nodos.e4.style.opacity = o.toFixed(3);
+    if (o > 0) {
+      const giro = prog(t, E.e4[0] + 0.2, E.e4[0] + 2.6);
+      if (giro < 1) {
+        const r = 1 - salida(giro);
+        crono.textContent = fmt(Math.max(96, OBJETIVO + (Math.sin(t * 59) * 14 + Math.sin(t * 23) * 7) * r));
+        crono.style.transform = 'scale(' + (1 + 0.05 * r).toFixed(4) + ')';
+      } else {
+        crono.textContent = '1:52.888';
+        const golpe = Math.max(0, 1 - prog(t, E.e4[0] + 2.6, E.e4[0] + 3.2));
+        crono.style.transform = 'scale(' + (1 + 0.1 * golpe).toFixed(4) + ')';
+      }
+    }
+
+    // --- 5 · el recuento ---
+    o = velo(t, E.e5[0], E.e5[0] + 0.55, E.e5[1] - 0.55, E.e5[1]);
+    nodos.e5.style.opacity = o.toFixed(3);
+    if (o > 0) {
+      const base = E.e5[0] + 0.9;
+      // ritmo: rápido abajo, se frena al acercarse al podio
+      let acum = 0;
+      filas.forEach((f, i) => {
+        const restantes = VALIDOS.length - i;              // 15 … 1  (luego los fuera de plazo)
+        const t0 = base + acum;
+        const paso = restantes <= 3 && restantes >= 1 ? 1.7 : restantes <= 6 ? 1.15 : 0.82;
+        acum += paso;
+        const p = prog(t, t0, t0 + 0.42);
+        f.el.style.opacity = suave(p).toFixed(3);
+        f.el.style.transform = 'translateX(' + (-30 + 30 * salida(p)).toFixed(1) + 'px)';
+        if (f.barra) {
+          const pb = prog(t, t0 + 0.15, t0 + 0.85);
+          f.barra.style.width = (f.ancho * salida(pb)).toFixed(1) + '%';
+        }
+      });
+    }
+
+    // --- 6 · podio ---
+    o = velo(t, E.e6[0], E.e6[0] + 0.55, E.e6[1] - 0.55, E.e6[1]);
+    nodos.e6.style.opacity = o.toFixed(3);
+    if (o > 0) {
+      const base = E.e6[0] + 0.9;
+      [2, 1, 0].forEach((idx, k) => {          // 3º, 2º y al final el 1º
+        const t0 = base + k * 2.0;
+        const p = prog(t, t0, t0 + 0.55);
+        podioEls[idx].style.opacity = suave(p).toFixed(3);
+        podioEls[idx].style.transform = 'scale(' + (0.9 + 0.1 * salida(p)).toFixed(4) + ')';
+      });
+      const tg = base + 2 * 2.0 + 0.55;
+      if (t > tg) podioEls[0].style.transform = 'scale(' + (1 + 0.015 * Math.sin((t - tg) * 4.2)).toFixed(4) + ')';
+    }
+
+    // --- 7 · cierre ---
+    nodos.e7.style.opacity = velo(t, E.e7[0], E.e7[0] + 0.65, FIN - 0.5, FIN).toFixed(3);
+  }
+
+  /* ====== REPRODUCCIÓN ====== */
+  const video = document.getElementById('bgvideo');
+  let t0 = null;
+
+  function cuadro(ahora) {
+    if (t0 === null) t0 = ahora;
+    const t = (ahora - t0) / 1000;
+    pintar(Math.min(t, FIN));
+    if (t < FIN + 0.4) requestAnimationFrame(cuadro);
+  }
+  function arrancar() {
+    t0 = null;
+    try { video.currentTime = 0; video.play().catch(() => {}); } catch (e) {}
+    requestAnimationFrame(cuadro);
+  }
+  document.getElementById('repetir').addEventListener('click', arrancar);
+
+  function encajar() {
+    const s = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
+    document.getElementById('stage').style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  window.addEventListener('resize', encajar);
+  encajar();
+
+  // modo render cuadro a cuadro:  ?render=1  →  window.__pintar(t)
+  if (new URLSearchParams(location.search).get('render') === '1') {
+    document.body.classList.add('render');
+    video.pause();
+    window.__DURACION = FIN;
+    window.__pintar = t => {
+      pintar(t);
+      try { video.currentTime = t % (video.duration || 40); } catch (e) {}
+    };
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+      pintar(0);
+      window.__LISTO = true;
+    });
+  } else {
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+      video.loop = true;
+      arrancar();
+    });
+  }
+})();
+</script>
+</body>
+</html>
